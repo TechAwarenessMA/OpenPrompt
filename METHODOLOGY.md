@@ -1,8 +1,8 @@
-# OpenPrompt Methodology
+# OpenH2O Methodology
 
 ## Overview
 
-OpenPrompt estimates the environmental impact of AI conversations by converting token counts into energy, water, and carbon metrics. These are **estimates** — actual values depend on many factors we cannot measure directly.
+OpenH2O estimates the environmental impact of AI conversations by converting token counts into energy, water, and carbon metrics. These are **estimates** — actual values depend on many factors we cannot measure directly.
 
 ## Calculation Pipeline
 

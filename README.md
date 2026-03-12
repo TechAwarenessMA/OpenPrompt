@@ -1,4 +1,4 @@
-# OpenPrompt
+# OpenH2O
 
 **Know your AI footprint.** Upload your Claude `conversations.json` export and see the energy, water, and carbon impact of your AI usage.
 
@@ -34,7 +34,7 @@ npm run preview
 
 1. Go to [claude.ai](https://claude.ai) → Settings → Export Data
 2. Download and unzip the export
-3. Upload `conversations.json` to OpenPrompt
+3. Upload `conversations.json` to OpenH2O
 4. Explore your environmental impact
 
 ## Updating Coefficients

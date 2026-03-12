@@ -40,14 +40,14 @@ export default function Layout({ children, hasData }) {
         <div className="sidebar-logo-area">
           <NavLink
             to="/"
-            aria-label="OpenPrompt Home"
+            aria-label="OpenH2O Home"
             className="logo-link flex items-center gap-2.5"
           >
             <div className="logo-box">
               <span className="logo-letter">O</span>
             </div>
             <div className="logo-text-group">
-              <span className="logo-name">OpenPrompt</span>
+              <span className="logo-name">OpenH2O</span>
               <span className="logo-sub">by TAA</span>
             </div>
           </NavLink>
@@ -115,12 +115,12 @@ export default function Layout({ children, hasData }) {
           <NavLink
             to="/"
             className="logo-link flex items-center gap-2"
-            aria-label="OpenPrompt Home"
+            aria-label="OpenH2O Home"
           >
             <div className="logo-box logo-box--sm">
               <span className="logo-letter logo-letter--sm">O</span>
             </div>
-            <span className="logo-name" style={{ fontSize: '0.9rem' }}>OpenPrompt</span>
+            <span className="logo-name" style={{ fontSize: '0.9rem' }}>OpenH2O</span>
           </NavLink>
 
           <div className="flex items-center gap-2">
@@ -159,7 +159,7 @@ export default function Layout({ children, hasData }) {
         <footer className="page-footer no-print">
           <div className="max-w-screen-xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
             <p className="text-sm text-slate font-bold text-center sm:text-left">
-              OpenPrompt is a free tool by{' '}
+              OpenH2O is a free tool by{' '}
               <a
                 href="https://www.techawarenessassociation.org"
                 target="_blank"

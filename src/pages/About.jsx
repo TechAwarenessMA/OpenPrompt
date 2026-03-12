@@ -4,7 +4,7 @@ export default function About() {
   return (
     <div className="space-y-8 animate-fade-in-up">
       <div>
-        <h1 className="text-3xl md:text-4xl font-black text-navy tracking-tight">About OpenPrompt</h1>
+        <h1 className="text-3xl md:text-4xl font-black text-navy tracking-tight">About OpenH2O</h1>
         <p className="text-slate font-bold mt-1">Understanding your AI environmental footprint</p>
       </div>
 
@@ -18,11 +18,11 @@ export default function About() {
         </div>
         <div className="space-y-3 text-sm text-ink font-bold leading-relaxed">
           <p>
-            OpenPrompt is built by the <strong>Tech Awareness Association</strong> (TAA), a student-founded nonprofit
+            OpenH2O is built by the <strong>Tech Awareness Association</strong> (TAA), a student-founded nonprofit
             dedicated to promoting technology literacy and digital responsibility.
           </p>
           <p>
-            As AI becomes an everyday tool, understanding its environmental cost is crucial. OpenPrompt makes
+            As AI becomes an everyday tool, understanding its environmental cost is crucial. OpenH2O makes
             this invisible impact visible — empowering users to make more informed choices about their AI usage.
           </p>
         </div>
@@ -30,7 +30,7 @@ export default function About() {
 
       {/* What this tool does */}
       <div className="border-4 border-navy bg-white p-6">
-        <h2 className="text-lg font-black text-navy uppercase tracking-wider mb-4">What OpenPrompt Does</h2>
+        <h2 className="text-lg font-black text-navy uppercase tracking-wider mb-4">What OpenH2O Does</h2>
         <ul className="space-y-3 text-sm text-ink font-bold">
           {[
             'Estimates the energy, water, and carbon footprint of your Claude AI conversations',
@@ -53,7 +53,7 @@ export default function About() {
       <div className="border-4 border-green bg-green/5 p-6">
         <h2 className="text-lg font-black text-navy uppercase tracking-wider mb-4">Privacy First</h2>
         <div className="space-y-2 text-sm text-ink font-bold leading-relaxed">
-          <p>OpenPrompt is a fully client-side application. This means:</p>
+          <p>OpenH2O is a fully client-side application. This means:</p>
           <ul className="space-y-1 ml-4">
             <li>• No data is sent to any server</li>
             <li>• No cookies or tracking</li>
@@ -79,7 +79,7 @@ export default function About() {
           </div>
         </a>
         <a
-          href="https://github.com/Tech-Awareness-Association/OpenPrompt"
+          href="https://github.com/Tech-Awareness-Association/OpenH2O"
           target="_blank"
           rel="noopener noreferrer"
           className="border-4 border-navy bg-white p-5 flex items-center gap-3 hover:bg-navy hover:text-white transition-colors group"
