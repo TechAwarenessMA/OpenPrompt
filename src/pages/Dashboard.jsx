@@ -4,11 +4,13 @@ import { useEcoData } from '../hooks/useEcoData';
 import UsageChart from '../components/UsageChart';
 import { formatNumber } from '../utils/formatters';
 import { getComparisons } from '../data/comparisons';
-import { Zap, Droplets, Cloud, AlertTriangle, ArrowRight, TrendingUp } from 'lucide-react';
+import { Zap, Droplets, Cloud, ArrowRight, BookOpen } from 'lucide-react';
 
-function useCountUp(target, duration = 1500) {
+/* ── Animated count-up ──────────────────────────────────── */
+function useCountUp(target, duration = 1600) {
   const [val, setVal] = useState(0);
   useEffect(() => {
+    if (!target) return;
     let start = null;
     let raf;
     const step = (ts) => {
@@ -24,29 +26,32 @@ function useCountUp(target, duration = 1500) {
   return val;
 }
 
-function AnimatedNum({ value, decimals }) {
-  const animated = useCountUp(value);
-  return <>{formatNumber(animated, decimals)}</>;
+function N({ value, decimals = 0 }) {
+  const v = useCountUp(value);
+  return <>{formatNumber(v, decimals)}</>;
 }
 
-function ImpactPanel({ cls, icon: Icon, label, value, decimals, unit, equivs }) {
+/* ── Metric column ──────────────────────────────────────── */
+function MetricCol({ cls, icon: Icon, label, value, decimals, unit, equivs }) {
   return (
-    <div className={`impact-panel ${cls}`}>
-      <div className="impact-panel-label">
+    <div className={`dash-metric ${cls}`}>
+      <div className="dash-metric-label">
         <Icon size={12} />
         {label}
       </div>
       <div>
-        <span className="impact-big-num">
-          <AnimatedNum value={value} decimals={decimals} />
+        <span className="dash-metric-num">
+          <N value={value} decimals={decimals} />
         </span>
-        <span className="impact-unit">{unit}</span>
+        <span className="dash-metric-unit">{unit}</span>
       </div>
-      <div className="impact-equiv">
+      <div className="dash-metric-equivs">
         {equivs.map((eq, i) => (
-          <div key={i} className="impact-equiv-row">
-            <span className="impact-equiv-emoji">{eq.emoji}</span>
-            <span className="impact-equiv-text">{eq.description.replace('Equivalent to ', '')}</span>
+          <div key={i} className="dash-metric-equiv-row">
+            <span className="dash-metric-equiv-emoji">{eq.emoji}</span>
+            <span className="dash-metric-equiv-text">
+              {eq.description.replace('Equivalent to ', '')}
+            </span>
           </div>
         ))}
       </div>
@@ -54,60 +59,62 @@ function ImpactPanel({ cls, icon: Icon, label, value, decimals, unit, equivs }) 
   );
 }
 
-function ProjectionSlider({ energyPerConvo, waterPerConvo, carbonPerConvo }) {
-  const [dailyConvos, setDailyConvos] = useState(5);
-  const annualConvos = dailyConvos * 365;
-  const annualEnergy = energyPerConvo * annualConvos;
-  const annualWater  = waterPerConvo  * annualConvos;
-  const annualCarbon = carbonPerConvo * annualConvos;
-
+/* ── Projection slider ──────────────────────────────────── */
+function Projection({ energyPerConvo, waterPerConvo, carbonPerConvo }) {
+  const [daily, setDaily] = useState(5);
+  const annual = daily * 365;
   return (
-    <div className="projection-section">
-      <div className="projection-header">
-        <div className="projection-title-row">
-          <TrendingUp size={14} className="projection-icon" />
-          <h2 className="projection-title">Annual Impact Projection</h2>
-        </div>
-        <p className="projection-sub">Drag to model your yearly footprint at different usage levels</p>
-      </div>
+    <section className="dash-projection">
+      <span className="dash-section-label">What if you keep going?</span>
+      <h2 className="dash-section-heading">Annual Impact Projection</h2>
 
-      <div className="projection-slider-row">
-        <span className="projection-slider-label">
-          <span className="projection-slider-val">{dailyConvos}</span> conversations/day
-        </span>
+      <div className="dash-projection-slider-row">
+        <div className="dash-projection-count-group">
+          <span className="dash-projection-count">{daily}</span>
+          <span className="dash-projection-count-label">convos / day</span>
+        </div>
         <input
-          type="range"
-          min={1}
-          max={50}
-          value={dailyConvos}
-          onChange={e => setDailyConvos(Number(e.target.value))}
-          className="projection-range"
+          type="range" min={1} max={50} value={daily}
+          onChange={e => setDaily(Number(e.target.value))}
+          className="dash-projection-range"
           aria-label="Daily conversations"
         />
-        <span className="projection-slider-right">{annualConvos.toLocaleString()}/yr</span>
+        <span className="dash-projection-range-label">
+          {annual.toLocaleString()} / yr
+        </span>
       </div>
 
-      <div className="projection-results">
-        <div className="projection-result projection-result--energy">
-          <span className="projection-result-num">{formatNumber(annualEnergy, 4)}</span>
-          <span className="projection-result-unit">kWh</span>
-          <span className="projection-result-label">energy</span>
+      <div className="dash-projection-results">
+        <div className="dash-projection-result dash-projection-result--energy">
+          <div className="dash-projection-result-accent" />
+          <span className="dash-projection-result-num">
+            {formatNumber(energyPerConvo * annual, 3)}
+          </span>
+          <span className="dash-projection-result-unit">kWh</span>
+          <span className="dash-projection-result-label">energy</span>
         </div>
-        <div className="projection-result projection-result--water">
-          <span className="projection-result-num">{formatNumber(annualWater, 2)}</span>
-          <span className="projection-result-unit">L</span>
-          <span className="projection-result-label">water</span>
+        <div className="dash-projection-result dash-projection-result--water">
+          <div className="dash-projection-result-accent" />
+          <span className="dash-projection-result-num">
+            {formatNumber(waterPerConvo * annual, 2)}
+          </span>
+          <span className="dash-projection-result-unit">liters</span>
+          <span className="dash-projection-result-label">water</span>
         </div>
-        <div className="projection-result projection-result--carbon">
-          <span className="projection-result-num">{formatNumber(annualCarbon, 2)}</span>
-          <span className="projection-result-unit">g CO₂</span>
-          <span className="projection-result-label">carbon</span>
+        <div className="dash-projection-result dash-projection-result--carbon">
+          <div className="dash-projection-result-accent" />
+          <span className="dash-projection-result-num">
+            {formatNumber(carbonPerConvo * annual, 2)}
+          </span>
+          <span className="dash-projection-result-unit">g CO₂</span>
+          <span className="dash-projection-result-label">carbon</span>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 
+/* ── Main Dashboard ─────────────────────────────────────── */
 export default function Dashboard() {
   const { hasData, totals, monthlyData } = useEcoData();
   const navigate = useNavigate();
@@ -116,7 +123,9 @@ export default function Dashboard() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] animate-fade-in px-8">
         <h2 className="text-2xl font-black text-navy mb-4">No data yet</h2>
-        <p className="text-slate font-bold mb-6">Upload your conversations.json to see your impact.</p>
+        <p className="text-slate font-bold mb-6">
+          Upload your conversations.json to see your impact.
+        </p>
         <button
           onClick={() => navigate('/')}
           className="px-6 py-3 bg-navy text-white font-black text-sm uppercase tracking-wider border-4 border-navy hover:bg-black transition-colors"
@@ -135,109 +144,159 @@ export default function Dashboard() {
   return (
     <div className="animate-fade-in-up">
 
-      {/* ── Dark block: header + 3 panels ─── */}
-      <div className="dash-dark-block">
-        <div className="impact-header">
-          <div className="impact-header-badge">
-            <AlertTriangle size={10} />
-            Impact Report
+      {/* ── 1. Hero ─────────────────────────────────────── */}
+      <section className="dash-hero">
+        <div className="dash-hero-tag">AI Footprint Report</div>
+        <h1 className="dash-hero-headline">
+          <span className="dash-hero-num">
+            <N value={totals.totalConversations} decimals={0} />
+          </span>{' '}conversations
+        </h1>
+        <p className="dash-hero-sub">Here's what they cost the planet.</p>
+        <div className="dash-hero-meta">
+          <div className="dash-hero-meta-item">
+            <span className="dash-hero-meta-val">
+              <N value={totals.totalTokens} decimals={0} />
+            </span>
+            <span className="dash-hero-meta-label">tokens processed</span>
           </div>
-          <div>
-            <h1 className="impact-header-title">Your AI Environmental Footprint</h1>
-            <p className="impact-header-sub">
-              {formatNumber(totals.totalConversations)} conversations &middot; {formatNumber(totals.totalTokens)} tokens analyzed
-            </p>
+          <div className="dash-hero-meta-div" />
+          <div className="dash-hero-meta-item">
+            <span className="dash-hero-meta-val" style={{ color: '#FAC206' }}>
+              <N value={totals.energyKwh} decimals={4} />
+            </span>
+            <span className="dash-hero-meta-label">kWh energy</span>
+          </div>
+          <div className="dash-hero-meta-div" />
+          <div className="dash-hero-meta-item">
+            <span className="dash-hero-meta-val" style={{ color: '#16C0FF' }}>
+              <N value={totals.waterLiters} decimals={1} />
+            </span>
+            <span className="dash-hero-meta-label">liters of water</span>
+          </div>
+          <div className="dash-hero-meta-div" />
+          <div className="dash-hero-meta-item">
+            <span className="dash-hero-meta-val" style={{ color: '#FB4B5F' }}>
+              <N value={totals.carbonGrams} decimals={1} />
+            </span>
+            <span className="dash-hero-meta-label">grams CO₂</span>
           </div>
         </div>
+      </section>
 
-        <div className="impact-panels">
-          <ImpactPanel
-            cls="impact-panel--energy"
-            icon={Zap}
-            label="Energy Consumed"
-            value={totals.energyKwh}
-            decimals={4}
-            unit="kWh"
-            equivs={[comparisons.badges[0], comparisons.badges[1]]}
-          />
-          <ImpactPanel
-            cls="impact-panel--water"
-            icon={Droplets}
-            label="Water Usage"
-            value={totals.waterLiters}
-            decimals={2}
-            unit="liters"
-            equivs={[comparisons.badges[2], comparisons.badges[3]]}
-          />
-          <ImpactPanel
-            cls="impact-panel--carbon"
-            icon={Cloud}
-            label="Carbon Footprint"
-            value={totals.carbonGrams}
-            decimals={2}
-            unit="g CO₂"
-            equivs={[comparisons.badges[4], comparisons.badges[5]]}
-          />
+      {/* ── 2. Three metric columns ─────────────────────── */}
+      <div className="dash-metrics-block">
+        <MetricCol
+          cls="dash-metric--energy"
+          icon={Zap}
+          label="Energy Consumed"
+          value={totals.energyKwh}
+          decimals={4}
+          unit="kWh"
+          equivs={[comparisons.badges[0], comparisons.badges[1]]}
+        />
+        <MetricCol
+          cls="dash-metric--water"
+          icon={Droplets}
+          label="Water Usage"
+          value={totals.waterLiters}
+          decimals={2}
+          unit="liters"
+          equivs={[comparisons.badges[2], comparisons.badges[3]]}
+        />
+        <MetricCol
+          cls="dash-metric--carbon"
+          icon={Cloud}
+          label="Carbon Footprint"
+          value={totals.carbonGrams}
+          decimals={2}
+          unit="g CO₂"
+          equivs={[comparisons.badges[4], comparisons.badges[5]]}
+        />
+      </div>
+
+      {/* ── 3. Context cards ────────────────────────────── */}
+      <section className="dash-context">
+        <span className="dash-section-label">In perspective</span>
+        <h2 className="dash-section-heading">What does this really mean?</h2>
+        <div className="dash-context-grid">
+          {comparisons.badges.map((badge, i) => (
+            <div key={i} className="dash-context-card">
+              <div className="dash-context-emoji">{badge.emoji}</div>
+              <div className="dash-context-num">
+                {formatNumber(badge.count, badge.count < 1 ? 2 : badge.count < 10 ? 1 : 0)}
+              </div>
+              <div className="dash-context-desc">{badge.title}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── 4. Per-conversation strip ────────────────────── */}
+      <div className="dash-per-convo">
+        <div className="dash-per-convo-item">
+          <span className="dash-per-convo-num" style={{ color: '#FAC206' }}>
+            {formatNumber(energyPerConvo, 5)}
+          </span>
+          <span className="dash-per-convo-label">kWh per conversation</span>
+        </div>
+        <div className="dash-per-convo-item">
+          <span className="dash-per-convo-num" style={{ color: '#16C0FF' }}>
+            {formatNumber(waterPerConvo, 3)}
+          </span>
+          <span className="dash-per-convo-label">liters per conversation</span>
+        </div>
+        <div className="dash-per-convo-item">
+          <span className="dash-per-convo-num" style={{ color: '#FB4B5F' }}>
+            {formatNumber(carbonPerConvo, 3)}
+          </span>
+          <span className="dash-per-convo-label">g CO₂ per conversation</span>
         </div>
       </div>
 
-      {/* ── Per-conversation cost ─── */}
-      <div className="per-convo-section">
-        <h2>Average Cost Per Conversation</h2>
-        <div className="per-convo-grid">
-          <div className="per-convo-item">
-            <span className="per-convo-val" style={{ color: '#FAC206' }}>
-              {formatNumber(energyPerConvo, 5)}
-            </span>
-            <span className="per-convo-label">kWh</span>
-          </div>
-          <div className="per-convo-item">
-            <span className="per-convo-val" style={{ color: '#16C0FF' }}>
-              {formatNumber(waterPerConvo, 3)}
-            </span>
-            <span className="per-convo-label">liters</span>
-          </div>
-          <div className="per-convo-item">
-            <span className="per-convo-val" style={{ color: '#FB4B5F' }}>
-              {formatNumber(carbonPerConvo, 3)}
-            </span>
-            <span className="per-convo-label">g CO₂</span>
-          </div>
-        </div>
-      </div>
-
-      {/* ── Projection slider ─── */}
-      <ProjectionSlider
+      {/* ── 5. Projection slider ────────────────────────── */}
+      <Projection
         energyPerConvo={energyPerConvo}
         waterPerConvo={waterPerConvo}
         carbonPerConvo={carbonPerConvo}
       />
 
-      {/* ── Monthly chart ─── */}
+      {/* ── 6. Monthly chart ────────────────────────────── */}
       {monthlyData.length > 1 && (
-        <div className="monthly-section">
-          <h2>Monthly Usage</h2>
+        <section className="dash-chart">
+          <span className="dash-section-label">Over time</span>
+          <h2 className="dash-section-heading" style={{ marginBottom: '1.25rem' }}>
+            Monthly Usage
+          </h2>
           <UsageChart data={monthlyData} />
-        </div>
+        </section>
       )}
 
-      {/* ── CTA ─── */}
-      <div className="dash-cta">
-        <div>
-          <p className="dash-cta-text">Ready to reduce your footprint?</p>
-          <p className="dash-cta-sub">See personalized tips and sustainable AI alternatives.</p>
+      {/* ── 7. Action CTA ───────────────────────────────── */}
+      <section className="dash-action">
+        <h2 className="dash-action-headline">
+          Awareness is the first step.<br />
+          What will you do with it?
+        </h2>
+        <p className="dash-action-sub">
+          Explore tips to reduce your footprint and understand the methodology behind these numbers.
+        </p>
+        <div className="dash-action-btns">
+          <button onClick={() => navigate('/insights')} className="dash-action-btn-primary">
+            Reduce My Impact <ArrowRight size={14} />
+          </button>
+          <button onClick={() => navigate('/methodology')} className="dash-action-btn-secondary">
+            How We Calculate <BookOpen size={14} />
+          </button>
         </div>
-        <button onClick={() => navigate('/insights')} className="dash-cta-btn">
-          View Insights <ArrowRight size={14} />
-        </button>
-      </div>
+      </section>
 
-      {/* ── Disclaimer ─── */}
-      <div className="px-6 py-3 border-t border-slate/10 bg-white/60">
+      {/* ── Disclaimer ──────────────────────────────────── */}
+      <div className="dash-disclaimer">
         <p className="text-xs text-slate font-bold">
-          These are estimates based on publicly available data.{' '}
+          Estimates based on publicly available research data.{' '}
           <button onClick={() => navigate('/methodology')} className="text-green underline font-black">
-            See our methodology →
+            See methodology →
           </button>
         </p>
       </div>
