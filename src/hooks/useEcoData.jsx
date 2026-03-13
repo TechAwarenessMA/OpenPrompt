@@ -9,6 +9,7 @@ export function EcoDataProvider({ children }) {
     totals: null,
     conversations: [],
     monthlyData: [],
+    dateRange: { earliest: null, latest: null },
     error: null,
   });
 
@@ -28,6 +29,7 @@ export function EcoDataProvider({ children }) {
         totals: result.totals,
         conversations: result.conversations,
         monthlyData: result.monthlyData,
+        dateRange: result.dateRange,
         error: null,
       });
     } catch (err) {
@@ -42,6 +44,7 @@ export function EcoDataProvider({ children }) {
       totals: null,
       conversations: [],
       monthlyData: [],
+      dateRange: { earliest: null, latest: null },
       error: null,
     });
   }, []);

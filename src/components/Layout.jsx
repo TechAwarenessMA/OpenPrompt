@@ -19,8 +19,7 @@ export default function Layout({ children, hasData }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);   // mobile drawer
   const [collapsed, setCollapsed] = useState(true);         // desktop rail
 
-  const isLanding   = location.pathname === '/';
-  const isDashboard = location.pathname === '/dashboard';
+  const isLanding = location.pathname === '/';
 
   useEffect(() => { setSidebarOpen(false); }, [location.pathname]);
 
@@ -149,19 +148,13 @@ export default function Layout({ children, hasData }) {
         </div>
 
         {/* Main content */}
-        <main className={`flex-1 pt-[56px] md:pt-0 ${isDashboard ? 'dash-main' : ''}`}>
-          {isDashboard ? (
-            children
-          ) : (
-            <div className="w-full max-w-screen-xl mx-auto px-4 md:px-8 lg:px-12 py-8 md:py-12">
-              {children}
-            </div>
-          )}
+        <main className="flex-1 pt-[56px] md:pt-0">
+          <div className="w-full max-w-5xl mx-auto px-4 md:px-8 lg:px-12 py-8 md:py-12">
+            {children}
+          </div>
         </main>
 
-        {/* Footer — hidden on dashboard */}
-        {!isDashboard && (
-          <footer className="page-footer no-print">
+        <footer className="page-footer no-print">
             <div className="max-w-screen-xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
               <p className="text-sm text-slate font-bold text-center sm:text-left">
                 OpenH2O is a free tool by{' '}
@@ -181,7 +174,6 @@ export default function Layout({ children, hasData }) {
               </div>
             </div>
           </footer>
-        )}
 
       </div>
     </>
