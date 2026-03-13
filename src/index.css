@@ -193,14 +193,14 @@ body {
   flex-shrink: 0;
 }
 .sidebar-toggle-btn:hover {
-  color: #2ECC71;
-  background: rgba(46,204,113,0.07);
+  color: #FAC206;
+  background: rgba(250,194,6,0.07);
 }
 
 /* Logo area */
 .sidebar-logo-area {
   padding: 1.25rem 1.25rem 1rem;
-  border-bottom: 2px solid rgba(46, 204, 113, 0.15);
+  border-bottom: 2px solid rgba(250, 194, 6, 0.15);
   flex-shrink: 0;
 }
 
@@ -286,11 +286,11 @@ body {
 
 @media (min-width: 768px) {
   .page-shell {
-    margin-left: 224px;
+    margin-left: 227px; /* 224px sidebar + 3px border-right */
     transition: margin-left 0.28s cubic-bezier(0.22, 1, 0.36, 1);
   }
   .page-shell--collapsed {
-    margin-left: 60px;
+    margin-left: 63px; /* 60px collapsed sidebar + 3px border-right */
   }
 }
 
@@ -306,7 +306,7 @@ body {
   background: rgba(44, 62, 80, 0.97);
   backdrop-filter: blur(18px) saturate(1.4);
   -webkit-backdrop-filter: blur(18px) saturate(1.4);
-  border-bottom: 3px solid rgba(46, 204, 113, 0.35);
+  border-bottom: 3px solid rgba(250, 194, 6, 0.3);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -421,7 +421,7 @@ body {
   cursor: pointer;
   transition: border-color 0.18s ease, background 0.18s ease;
 }
-.hamburger-btn:hover { border-color: #2ECC71; background: rgba(46,204,113,0.1); }
+.hamburger-btn:hover { border-color: #FAC206; background: rgba(250,194,6,0.1); }
 
 /* Close button (mobile sidebar) */
 .close-btn {
@@ -436,7 +436,7 @@ body {
   cursor: pointer;
   transition: border-color 0.18s ease;
 }
-.close-btn:hover { border-color: #2ECC71; }
+.close-btn:hover { border-color: #FAC206; }
 
 /* ─── LANDING PAGE — SPLIT LAYOUT ───────────────────────── */
 

@@ -35,6 +35,7 @@ export function processConversations(rawConversations) {
 
   let totalInputTokens = 0;
   let totalOutputTokens = 0;
+  let totalMessages = 0;
   let earliestDate = null;
   let latestDate = null;
   const monthlyBuckets = {};
@@ -71,6 +72,7 @@ export function processConversations(rawConversations) {
 
     totalInputTokens += inputTokens;
     totalOutputTokens += outputTokens;
+    totalMessages += messages.length;
 
     // Track date range
     if (createdAt) {
@@ -116,6 +118,7 @@ export function processConversations(rawConversations) {
   return {
     totals: {
       totalConversations: conversations.length,
+      totalMessages,
       totalTokens,
       inputTokens: totalInputTokens,
       outputTokens: totalOutputTokens,

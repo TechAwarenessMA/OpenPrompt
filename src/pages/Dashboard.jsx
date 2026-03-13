@@ -132,7 +132,7 @@ function FunFacts({ comparisons }) {
     },
     {
       emoji: comparisons.badges[5].emoji,
-      text: `Same CO₂ as ${formatNumber(comparisons.badges[5].count, 0)} Google searches`,
+      text: `Same CO₂ as charging your phone ${formatNumber(comparisons.badges[5].count, 1)} times`,
     },
   ];
 
