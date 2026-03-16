@@ -1,14 +1,15 @@
 import { encode } from 'gpt-tokenizer';
 
 /**
- * Count tokens in a message content value.
- * Handles both string content and content block arrays.
- * @param {string|Array} content - Message content (string or content blocks)
+ * Count tokens in a text string using GPT-4 BPE encoding.
+ * Claude's tokenizer is not publicly available; GPT-4 tiktoken produces
+ * counts within ~5% for typical English text (disclosed to users).
+ *
+ * @param {string} text - Plain text to tokenize
  * @returns {number} Token count
  */
-export function countTokens(content) {
-  const text = extractText(content);
-  if (!text) return 0;
+export function countTokens(text) {
+  if (!text || typeof text !== 'string') return 0;
   try {
     return encode(text).length;
   } catch {
@@ -18,21 +19,19 @@ export function countTokens(content) {
 }
 
 /**
- * Extract plain text from message content.
- * Claude exports can have string content or array of content blocks.
- * @param {string|Array} content
- * @returns {string}
+ * Extract plain text from a single message's content field.
+ * Claude exports use content: [ { type: 'text', text: '...' }, ... ]
+ * We only count text blocks — skip images, tool_use, etc.
+ *
+ * @param {string|Array} content - message.content value
+ * @returns {string} Extracted plain text
  */
-function extractText(content) {
+export function extractText(content) {
   if (typeof content === 'string') return content;
   if (Array.isArray(content)) {
     return content
-      .map(block => {
-        if (typeof block === 'string') return block;
-        if (block.type === 'text') return block.text || '';
-        // Skip images, tool_use, etc. — we only count text tokens
-        return '';
-      })
+      .filter(block => block && block.type === 'text')
+      .map(block => block.text || '')
       .join(' ');
   }
   return '';

@@ -1,26 +1,64 @@
 import { COEFFICIENTS } from '../data/coefficients';
-import { countTokens } from './tokenizer';
+import { countTokens, extractText } from './tokenizer';
 
 /**
- * Calculate environmental impact for given input and output token counts.
- * Uses separate coefficients for input vs output tokens per Luccioni et al. 2023.
- * @param {number} inputTokens - Tokens from human/user messages
- * @param {number} outputTokens - Tokens from assistant messages
+ * Calculate environmental impact from input and output token counts.
+ *
+ * Formula (from spec Section 3.4):
+ *   rawEnergy_wh  = (inputTokens × energy_per_input_token_wh)
+ *                  + (outputTokens × energy_per_output_token_wh)
+ *   totalEnergy_wh  = rawEnergy_wh × pue_multiplier
+ *   totalEnergy_kwh = totalEnergy_wh / 1000
+ *   water_liters    = totalEnergy_kwh × water_per_kwh_liters
+ *   carbon_gco2e    = totalEnergy_kwh × carbon_per_kwh_gco2e
+ *
+ * @param {number} inputTokens  - Tokens from sender === 'human'
+ * @param {number} outputTokens - Tokens from sender === 'assistant'
  * @returns {{ energyKwh: number, waterLiters: number, carbonGrams: number }}
  */
 function calcImpact(inputTokens, outputTokens) {
+  // Step 2: Raw energy (Wh)
   const rawEnergyWh =
-    inputTokens * COEFFICIENTS.energy_per_input_token_wh +
-    outputTokens * COEFFICIENTS.energy_per_output_token_wh;
-  const energyKwh = (rawEnergyWh * COEFFICIENTS.pue_multiplier) / 1000;
+    (inputTokens * COEFFICIENTS.energy_per_input_token_wh) +
+    (outputTokens * COEFFICIENTS.energy_per_output_token_wh);
+
+  // Step 3: Apply PUE and convert to kWh
+  const totalEnergyWh = rawEnergyWh * COEFFICIENTS.pue_multiplier;
+  const energyKwh = totalEnergyWh / 1000;
+
+  // Step 4: Water & Carbon
   const waterLiters = energyKwh * COEFFICIENTS.water_per_kwh_liters;
   const carbonGrams = energyKwh * COEFFICIENTS.carbon_per_kwh_gco2e;
+
   return { energyKwh, waterLiters, carbonGrams };
 }
 
 /**
+ * Extract text from a single message object.
+ * Handles Claude export format: message.content is array of content blocks.
+ * Falls back to message.text for alternative formats.
+ *
+ * @param {Object} msg - A chat message object
+ * @returns {string} Plain text content
+ */
+function getMessageText(msg) {
+  // Claude export: content is array of { type, text } blocks
+  if (msg.content !== undefined) {
+    return extractText(msg.content);
+  }
+  // Fallback for alternative formats
+  if (typeof msg.text === 'string') return msg.text;
+  return '';
+}
+
+/**
  * Process a Claude conversations.json export.
- * @param {Array} rawConversations - The parsed JSON array
+ *
+ * Tokenization follows spec Section 3.2:
+ *   inputTokens  = encode(humanMessages.join(' ')).length
+ *   outputTokens = encode(assistantMessages.join(' ')).length
+ *
+ * @param {Array|Object} rawConversations - The parsed JSON (array or wrapper object)
  * @returns {{ totals, conversations, monthlyData, dateRange }}
  */
 export function processConversations(rawConversations) {
@@ -45,30 +83,25 @@ export function processConversations(rawConversations) {
     const title = convo.name || convo.title || `Conversation ${index + 1}`;
     const createdAt = convo.created_at || convo.create_time || null;
 
-    let inputTokens = 0;
-    let outputTokens = 0;
+    // Step 1: Collect all human and assistant message texts separately
+    const humanTexts = [];
+    const assistantTexts = [];
 
     for (const msg of messages) {
-      const role = msg.sender || msg.role || 'unknown';
-      // content may be array of blocks or a string
-      let text = '';
-      if (typeof msg.content === 'string') {
-        text = msg.content;
-      } else if (Array.isArray(msg.content)) {
-        text = msg.content
-          .filter(b => b.type === 'text')
-          .map(b => b.text || '')
-          .join(' ');
-      } else {
-        text = msg.text || '';
-      }
-      const tokens = countTokens(text);
-      if (role === 'human' || role === 'user') {
-        inputTokens += tokens;
-      } else {
-        outputTokens += tokens;
+      const sender = msg.sender || msg.role || 'unknown';
+      const text = getMessageText(msg);
+      if (!text) continue;
+
+      if (sender === 'human' || sender === 'user') {
+        humanTexts.push(text);
+      } else if (sender === 'assistant') {
+        assistantTexts.push(text);
       }
     }
+
+    // Step 1 (spec): Join all texts per role, then tokenize once
+    const inputTokens = countTokens(humanTexts.join(' '));
+    const outputTokens = countTokens(assistantTexts.join(' '));
 
     totalInputTokens += inputTokens;
     totalOutputTokens += outputTokens;
@@ -83,7 +116,13 @@ export function processConversations(rawConversations) {
 
         const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
         if (!monthlyBuckets[key]) {
-          monthlyBuckets[key] = { month: key, tokens: 0, inputTokens: 0, outputTokens: 0, conversations: 0 };
+          monthlyBuckets[key] = {
+            month: key,
+            tokens: 0,
+            inputTokens: 0,
+            outputTokens: 0,
+            conversations: 0,
+          };
         }
         monthlyBuckets[key].tokens += inputTokens + outputTokens;
         monthlyBuckets[key].inputTokens += inputTokens;
@@ -92,6 +131,7 @@ export function processConversations(rawConversations) {
       }
     }
 
+    // Steps 2–4: Calculate energy, water, carbon
     const impact = calcImpact(inputTokens, outputTokens);
 
     return {
@@ -105,9 +145,11 @@ export function processConversations(rawConversations) {
     };
   });
 
+  // Aggregate totals using the same formula
   const totalsImpact = calcImpact(totalInputTokens, totalOutputTokens);
   const totalTokens = totalInputTokens + totalOutputTokens;
 
+  // Monthly data sorted chronologically
   const monthlyData = Object.values(monthlyBuckets)
     .sort((a, b) => a.month.localeCompare(b.month))
     .map(bucket => ({
