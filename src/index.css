@@ -323,25 +323,37 @@ body {
     width: 224px !important; /* always full-width on mobile drawer */
   }
   .sidebar--open {
-    transform: translateX(0);
+    transform: translateX(0) !important;
   }
-  /* In mobile open drawer, always show labels regardless of collapsed state */
+  /* Override collapsed styles when mobile drawer is open */
+  .sidebar--open.sidebar--collapsed {
+    width: 224px !important;
+  }
   .sidebar--open .sidebar-logo-area {
-    padding: 1.25rem 1.25rem 1rem;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: flex-start;
+    padding: 1.25rem 1.25rem 1rem !important;
+    flex-direction: row !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+  }
+  .sidebar--open .logo-box {
+    margin: 0 !important;
   }
   .sidebar--open .sidebar-item {
-    padding: 0.8rem 1.25rem;
-    justify-content: flex-start;
-    gap: 0.6rem;
+    padding: 0.8rem 1.25rem !important;
+    justify-content: flex-start !important;
+    gap: 0.6rem !important;
     border-left: 3px solid transparent;
   }
   .sidebar--open .sidebar-item--active {
-    border-left-color: #FAC206;
-    color: #FAC206;
-    padding-left: 1.5rem;
+    border-left-color: #FAC206 !important;
+    color: #FAC206 !important;
+    padding-left: 1.5rem !important;
+  }
+
+  /* On mobile, page-shell should have no left margin */
+  .page-shell,
+  .page-shell--collapsed {
+    margin-left: 0 !important;
   }
 }
 

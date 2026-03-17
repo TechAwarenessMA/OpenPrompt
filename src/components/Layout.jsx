@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
   Upload, BarChart3, List, Lightbulb, BookOpen, Info,
-  Menu, ChevronRight, ChevronLeft,
+  Menu, X, ChevronRight, ChevronLeft,
 } from 'lucide-react';
 
 const navItems = [
@@ -35,19 +35,30 @@ export default function Layout({ children, hasData }) {
       {/* ── SIDEBAR ─────────────────────────────────────────── */}
       <aside className={`sidebar no-print ${sidebarOpen ? 'sidebar--open' : ''} ${collapsed ? 'sidebar--collapsed' : ''}`}>
 
-        {/* Logo */}
+        {/* Logo + close button */}
         <div className="sidebar-logo-area">
-          <NavLink to="/" aria-label="OpenH2O Home" className="logo-link flex items-center gap-2.5">
-            <div className="logo-box">
-              <span className="logo-letter">O</span>
-            </div>
-            {(!collapsed || sidebarOpen) && (
-              <div className="logo-text-group">
-                <span className="logo-name">OpenH2O</span>
-                <span className="logo-sub">by TAA</span>
+          <div className="flex items-center justify-between w-full">
+            <NavLink to="/" aria-label="OpenH2O Home" className="logo-link flex items-center gap-2.5">
+              <div className="logo-box">
+                <span className="logo-letter">O</span>
               </div>
+              {(!collapsed || sidebarOpen) && (
+                <div className="logo-text-group">
+                  <span className="logo-name">OpenH2O</span>
+                  <span className="logo-sub">by TAA</span>
+                </div>
+              )}
+            </NavLink>
+            {sidebarOpen && (
+              <button
+                className="close-btn md:hidden"
+                onClick={() => setSidebarOpen(false)}
+                aria-label="Close navigation"
+              >
+                <X size={18} />
+              </button>
             )}
-          </NavLink>
+          </div>
           {collapsed && !sidebarOpen && hasData && <div className="collapsed-live-dot" title="Data loaded" />}
           {(!collapsed || sidebarOpen) && hasData && (
             <div className="sidebar-data-badge">
@@ -93,7 +104,7 @@ export default function Layout({ children, hasData }) {
             </div>
           )}
           <button
-            className="sidebar-toggle-btn"
+            className="sidebar-toggle-btn hidden md:flex"
             onClick={() => setCollapsed(c => !c)}
             aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >

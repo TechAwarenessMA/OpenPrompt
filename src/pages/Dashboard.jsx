@@ -364,10 +364,10 @@ export default function Dashboard() {
         </p>
       </div>
 
-      {/* ── Big 3 Metric Cards ──────────────────────────────── */}
+      {/* ── Big 3 Metric Cards (Overall Totals) ────────────── */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <MetricCard
-          label="Carbon"
+          label="Total Carbon"
           value={totals.carbonGrams}
           decimals={2}
           unit="g CO₂e"
@@ -377,7 +377,7 @@ export default function Dashboard() {
           equivs={[comparisons.badges[4], comparisons.badges[5]]}
         />
         <MetricCard
-          label="Water"
+          label="Total Water"
           value={totals.waterLiters}
           decimals={2}
           unit="liters"
@@ -387,7 +387,7 @@ export default function Dashboard() {
           equivs={[comparisons.badges[2], comparisons.badges[3]]}
         />
         <MetricCard
-          label="Energy"
+          label="Total Energy"
           value={totals.energyKwh}
           decimals={4}
           unit="kWh"
@@ -398,15 +398,20 @@ export default function Dashboard() {
         />
       </div>
 
-      {/* ── Per-conversation strip ──────────────────────────── */}
-      <PerConvoStrip
-        energyPerConvo={energyPerConvo}
-        waterPerConvo={waterPerConvo}
-        carbonPerConvo={carbonPerConvo}
-      />
-
       {/* ── Fun Facts Strip ─────────────────────────────────── */}
       <FunFacts comparisons={comparisons} />
+
+      {/* ── Per-conversation averages ─────────────────────────── */}
+      <div>
+        <p className="text-xs font-black text-slate uppercase tracking-wider mb-3">
+          Average Per Conversation
+        </p>
+        <PerConvoStrip
+          energyPerConvo={energyPerConvo}
+          waterPerConvo={waterPerConvo}
+          carbonPerConvo={carbonPerConvo}
+        />
+      </div>
 
       {/* ── Context grid ────────────────────────────────────── */}
       <ContextGrid comparisons={comparisons} />
