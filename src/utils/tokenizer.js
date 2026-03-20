@@ -21,18 +21,29 @@ export function countTokens(text) {
 /**
  * Extract plain text from a single message's content field.
  * Claude exports use content: [ { type: 'text', text: '...' }, ... ]
- * We only count text blocks — skip images, tool_use, etc.
+ *
+ * Handles multiple content block types:
+ *   - { type: 'text', text: '...' }         → extract text
+ *   - { type: 'tool_result', content: ... }  → recurse into content
+ *   - All other types (tool_use, images)     → skip
  *
  * @param {string|Array} content - message.content value
  * @returns {string} Extracted plain text
  */
 export function extractText(content) {
   if (typeof content === 'string') return content;
-  if (Array.isArray(content)) {
-    return content
-      .filter(block => block && block.type === 'text')
-      .map(block => block.text || '')
-      .join(' ');
+  if (!Array.isArray(content)) return '';
+
+  const parts = [];
+  for (const block of content) {
+    if (!block) continue;
+    if (block.type === 'text' && block.text) {
+      parts.push(block.text);
+    } else if (block.type === 'tool_result' && block.content) {
+      // tool_result blocks can contain nested text
+      const nested = extractText(block.content);
+      if (nested) parts.push(nested);
+    }
   }
-  return '';
+  return parts.join(' ');
 }

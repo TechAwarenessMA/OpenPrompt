@@ -38,15 +38,20 @@ function calcImpact(inputTokens, outputTokens) {
  * Handles Claude export format: message.content is array of content blocks.
  * Falls back to message.text for alternative formats.
  *
+ * Robust against edge cases:
+ *   content: null, content: [], content with only tool_use blocks,
+ *   content: '' — all fall back to msg.text if available.
+ *
  * @param {Object} msg - A chat message object
  * @returns {string} Plain text content
  */
 function getMessageText(msg) {
   // Claude export: content is array of { type, text } blocks
-  if (msg.content !== undefined) {
-    return extractText(msg.content);
+  if (msg.content != null) {
+    const text = extractText(msg.content);
+    if (text) return text;
   }
-  // Fallback for alternative formats
+  // Fallback for alternative formats or when content extraction yields nothing
   if (typeof msg.text === 'string') return msg.text;
   return '';
 }
