@@ -36,12 +36,12 @@ function N({ value, decimals = 0 }) {
 function MetricCard({ label, value, decimals, unit, icon: Icon, accentColor, shadowColor, equivs }) {
   return (
     <div
-      className="bg-white border-4 border-navy p-6 flex flex-col gap-3 transition-transform hover:-translate-y-0.5"
+      className="bg-white border-4 border-navy p-5 md:p-6 flex flex-col gap-3 transition-transform hover:-translate-y-0.5 overflow-hidden"
       style={{ boxShadow: `8px 8px 0px 0px ${shadowColor}` }}
     >
       <div className="flex items-center gap-2">
         <div
-          className="w-8 h-8 flex items-center justify-center border-2 border-navy"
+          className="w-8 h-8 flex items-center justify-center border-2 border-navy flex-shrink-0"
           style={{ background: accentColor }}
         >
           <Icon size={16} className="text-navy" />
@@ -49,17 +49,17 @@ function MetricCard({ label, value, decimals, unit, icon: Icon, accentColor, sha
         <span className="text-xs font-black text-slate uppercase tracking-wider">{label}</span>
       </div>
 
-      <div className="mt-1">
-        <span className="text-6xl md:text-7xl font-black text-navy leading-none tracking-tight">
+      <div className="mt-1 min-w-0">
+        <span className="text-4xl sm:text-5xl font-black text-navy leading-none tracking-tight block">
           <N value={value} decimals={decimals} />
         </span>
-        <span className="text-base font-black text-slate ml-2 uppercase">{unit}</span>
+        <span className="text-sm font-black text-slate mt-1 uppercase block">{unit}</span>
       </div>
 
       {equivs && equivs.length > 0 && (
         <div className="border-t-2 border-navy/10 pt-3 mt-1 space-y-1.5">
           {equivs.map((eq, i) => (
-            <p key={i} className="text-sm font-bold text-slate">
+            <p key={i} className="text-sm font-bold text-slate leading-snug">
               <span className="text-lg mr-1">{eq.emoji}</span>
               {eq.description.replace('Equivalent to ', '')}
             </p>
@@ -143,23 +143,30 @@ function TokenPanel({ inputTokens, outputTokens }) {
 }
 
 /* ── Fun Facts Strip ───────────────────────────────────────── */
+/** Format a comparison count with enough precision to never show plain "0" */
+function fmtComp(n, decimals = 1) {
+  if (n === 0) return '0';
+  if (n < 0.1) return n < 0.01 ? n.toFixed(4) : n.toFixed(2);
+  return formatNumber(n, decimals);
+}
+
 function FunFacts({ comparisons }) {
   const facts = [
     {
       emoji: comparisons.badges[0].emoji,
-      text: `Your AI usage = leaving a lightbulb on for ${formatNumber(comparisons.badges[0].count, 1)} hours`,
+      text: `Your AI usage = leaving a lightbulb on for ${fmtComp(comparisons.badges[0].count, 1)} hours`,
     },
     {
       emoji: comparisons.badges[2].emoji,
-      text: `That's the same water as ${formatNumber(comparisons.badges[2].count, 1)} water bottles`,
+      text: `That's the same water as ${fmtComp(comparisons.badges[2].count, 1)} water bottles`,
     },
     {
       emoji: comparisons.badges[4].emoji,
-      text: `Carbon equivalent of driving ${formatNumber(comparisons.badges[4].count, 2)} miles`,
+      text: `Carbon equivalent of driving ${fmtComp(comparisons.badges[4].count, 2)} miles`,
     },
     {
       emoji: comparisons.badges[5].emoji,
-      text: `Same CO₂ as charging your phone ${formatNumber(comparisons.badges[5].count, 1)} times`,
+      text: `Same CO₂ as charging your phone ${fmtComp(comparisons.badges[5].count, 1)} times`,
     },
   ];
 

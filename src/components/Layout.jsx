@@ -116,7 +116,7 @@ export default function Layout({ children, hasData }) {
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
-          className="sidebar-overlay md:hidden"
+          className="sidebar-overlay"
           onClick={() => setSidebarOpen(false)}
           aria-hidden="true"
         />
@@ -125,8 +125,8 @@ export default function Layout({ children, hasData }) {
       {/* ── PAGE SHELL ─────────────────────────────────────── */}
       <div className={`page-shell ${collapsed ? 'page-shell--collapsed' : ''}`}>
 
-        {/* Mobile topbar */}
-        <div className="mobile-topbar md:hidden no-print">
+        {/* Mobile topbar — hidden on desktop via CSS media query */}
+        <div className="mobile-topbar no-print">
           <NavLink to="/" className="logo-link flex items-center gap-2" aria-label="OpenH2O Home">
             <div className="logo-box logo-box--sm">
               <span className="logo-letter logo-letter--sm">O</span>
@@ -158,8 +158,8 @@ export default function Layout({ children, hasData }) {
           </div>
         </div>
 
-        {/* Main content */}
-        <main className="flex-1 pt-[56px] md:pt-0">
+        {/* Main content — top padding for mobile topbar handled in CSS */}
+        <main className="flex-1">
           <div className="w-full max-w-5xl mx-auto px-4 md:px-8 lg:px-12 py-8 md:py-12">
             {children}
           </div>

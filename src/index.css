@@ -314,18 +314,25 @@ body {
   z-index: 48;
 }
 
+/* Hide mobile topbar on desktop — must be in CSS because
+   unlayered styles override Tailwind v4 utility layer */
+@media (min-width: 768px) {
+  .mobile-topbar {
+    display: none !important;
+  }
+}
+
 /* ─── MOBILE SIDEBAR OVERLAY & DRAWER ───────────────────── */
 
 @media (max-width: 767px) {
   .sidebar {
     transform: translateX(-100%);
     z-index: 60;
-    width: 224px !important; /* always full-width on mobile drawer */
+    width: 224px !important;
   }
   .sidebar--open {
     transform: translateX(0) !important;
   }
-  /* Override collapsed styles when mobile drawer is open */
   .sidebar--open.sidebar--collapsed {
     width: 224px !important;
   }
@@ -350,10 +357,15 @@ body {
     padding-left: 1.5rem !important;
   }
 
-  /* On mobile, page-shell should have no left margin */
+  /* No left margin on mobile — sidebar is a drawer overlay */
   .page-shell,
   .page-shell--collapsed {
     margin-left: 0 !important;
+  }
+
+  /* Add top padding for fixed mobile topbar */
+  .page-shell main {
+    padding-top: 56px !important;
   }
 }
 
@@ -363,6 +375,12 @@ body {
   background: rgba(24, 24, 24, 0.6);
   backdrop-filter: blur(4px);
   z-index: 59;
+}
+
+@media (min-width: 768px) {
+  .sidebar-overlay {
+    display: none !important;
+  }
 }
 
 /* Logo shared styles */
