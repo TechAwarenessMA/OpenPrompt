@@ -1,10 +1,32 @@
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useEcoData } from '../hooks/useEcoData';
 import ConvoTable from '../components/ConvoTable';
+import ConvoDetailPanel from '../components/ConvoDetailPanel';
+
+/** Match a processed conversation back to its raw data by title + date */
+function findRawConvo(rawData, convo) {
+  if (!rawData) return null;
+  const convos = Array.isArray(rawData)
+    ? rawData
+    : rawData.conversations || rawData.chat_messages || Object.values(rawData);
+  if (!Array.isArray(convos)) return null;
+  return convos.find(raw => {
+    const rawTitle = raw.name || raw.title || '';
+    const rawDate = raw.created_at || raw.create_time || '';
+    return rawTitle === convo.title && rawDate === convo.createdAt;
+  }) || null;
+}
 
 export default function Breakdown() {
-  const { hasData, conversations } = useEcoData();
+  const { hasData, conversations, rawData } = useEcoData();
   const navigate = useNavigate();
+  const [selectedConvo, setSelectedConvo] = useState(null);
+
+  const rawMatch = useMemo(() => {
+    if (!selectedConvo || !rawData) return null;
+    return findRawConvo(rawData, selectedConvo);
+  }, [selectedConvo, rawData]);
 
   if (!hasData) {
     return (
@@ -24,13 +46,38 @@ export default function Breakdown() {
   return (
     <div className="space-y-6 animate-fade-in-up">
       <div>
-        <h1 className="text-3xl md:text-4xl font-black text-navy tracking-tight">Conversation Breakdown</h1>
+        <h1 className="text-3xl md:text-4xl font-black text-navy tracking-tight uppercase">
+          Conversation Breakdown
+        </h1>
         <p className="text-slate font-bold mt-1">
           {conversations.length} conversations sorted by impact
+          {selectedConvo && ' · Click a row to inspect'}
         </p>
       </div>
 
-      <ConvoTable conversations={conversations} />
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* Left: Table */}
+        <div className={selectedConvo ? 'flex-1 min-w-0' : 'w-full'}>
+          <ConvoTable
+            conversations={conversations}
+            selectedConvo={selectedConvo}
+            onSelectConvo={setSelectedConvo}
+          />
+        </div>
+
+        {/* Right: Detail Panel */}
+        {selectedConvo && rawMatch && (
+          <div className="w-full lg:w-[420px] lg:flex-shrink-0">
+            <div className="lg:sticky lg:top-4">
+              <ConvoDetailPanel
+                convo={selectedConvo}
+                rawConvo={rawMatch}
+                onClose={() => setSelectedConvo(null)}
+              />
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

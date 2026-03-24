@@ -67,7 +67,7 @@ export default function About() {
       {/* Links */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <a
-          href="https://www.techawarenessassociation.org"
+          href="https://www.techawarenessma.com"
           target="_blank"
           rel="noopener noreferrer"
           className="border-4 border-navy bg-white p-5 flex items-center gap-3 hover:bg-navy hover:text-white transition-colors group"
@@ -75,7 +75,7 @@ export default function About() {
           <ExternalLink size={20} className="text-green group-hover:text-sunshine" />
           <div>
             <p className="font-black text-sm uppercase tracking-wider">TAA Website</p>
-            <p className="text-xs text-slate group-hover:text-white/70 font-bold">techawarenessassociation.org</p>
+            <p className="text-xs text-slate group-hover:text-white/70 font-bold">techawarenessma.com</p>
           </div>
         </a>
         <a

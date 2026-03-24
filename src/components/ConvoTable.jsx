@@ -9,15 +9,14 @@ const SORT_KEYS = [
   { key: 'energyKwh', label: 'Energy' },
   { key: 'waterLiters', label: 'Water' },
   { key: 'carbonGrams', label: 'Carbon' },
-  { key: 'messageCount', label: 'Messages' },
+  { key: 'messageCount', label: 'Msgs' },
 ];
 
-export default function ConvoTable({ conversations }) {
+export default function ConvoTable({ conversations, selectedConvo, onSelectConvo }) {
   const [search, setSearch] = useState('');
   const [sortKey, setSortKey] = useState('totalTokens');
   const [sortDir, setSortDir] = useState('desc');
   const [page, setPage] = useState(0);
-  const [expanded, setExpanded] = useState(null);
 
   const filtered = useMemo(() => {
     let result = conversations;
@@ -50,6 +49,9 @@ export default function ConvoTable({ conversations }) {
     const sorted = [...conversations].sort((a, b) => b.totalTokens - a.totalTokens);
     return sorted.slice(0, 5).includes(convo);
   };
+
+  const isSelected = (convo) =>
+    selectedConvo && convo.title === selectedConvo.title && convo.createdAt === selectedConvo.createdAt;
 
   return (
     <div className="space-y-4">
@@ -95,52 +97,37 @@ export default function ConvoTable({ conversations }) {
             </tr>
           </thead>
           <tbody>
-            {pageData.map((convo, i) => (
-              <tr key={i}>
-                <td colSpan={SORT_KEYS.length + 1} className="p-0">
-                  <div
-                    className={`flex items-center cursor-pointer hover:bg-cream/50 transition-colors ${
-                      isTop5(convo) ? 'border-l-4 border-coral' : ''
-                    }`}
-                    onClick={() => setExpanded(expanded === i ? null : i)}
-                  >
-                    <div className="py-3 px-3 w-2/5">
-                      <p className="font-bold text-ink truncate">{convo.title || 'Untitled'}</p>
-                      <p className="text-xs text-slate font-bold">{formatDate(convo.createdAt)}</p>
-                    </div>
-                    <div className="py-3 px-3 text-right font-bold text-ink flex-1">{formatNumber(convo.totalTokens)}</div>
-                    <div className="py-3 px-3 text-right font-bold text-ink flex-1">{formatNumber(convo.energyKwh, 6)}</div>
-                    <div className="py-3 px-3 text-right font-bold text-ink flex-1">{formatNumber(convo.waterLiters, 4)}</div>
-                    <div className="py-3 px-3 text-right font-bold text-ink flex-1">{formatNumber(convo.carbonGrams, 4)}</div>
-                    <div className="py-3 px-3 text-right font-bold text-ink flex-1">{convo.messageCount}</div>
-                  </div>
-
-                  {/* Expanded details */}
-                  {expanded === i && (
-                    <div className="px-3 pb-3 bg-cream border-t-2 border-navy/10 animate-fade-in">
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 py-3">
-                        <div>
-                          <p className="text-xs text-slate font-black uppercase tracking-wider">User Tokens</p>
-                          <p className="text-sm font-black text-navy">{formatNumber(convo.userTokens)}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-slate font-black uppercase tracking-wider">Assistant Tokens</p>
-                          <p className="text-sm font-black text-navy">{formatNumber(convo.assistantTokens)}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-slate font-black uppercase tracking-wider">Messages</p>
-                          <p className="text-sm font-black text-navy">{convo.messageCount}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-slate font-black uppercase tracking-wider">Date</p>
-                          <p className="text-sm font-black text-navy">{formatDate(convo.createdAt)}</p>
-                        </div>
+            {pageData.map((convo, i) => {
+              const selected = isSelected(convo);
+              return (
+                <tr key={i}>
+                  <td colSpan={SORT_KEYS.length + 1} className="p-0">
+                    <div
+                      className={`flex items-center cursor-pointer transition-colors ${
+                        selected
+                          ? 'bg-green/8 border-l-4 border-green'
+                          : isTop5(convo)
+                            ? 'border-l-4 border-coral hover:bg-cream/50'
+                            : 'hover:bg-cream/50'
+                      }`}
+                      onClick={() => onSelectConvo?.(selected ? null : convo)}
+                    >
+                      <div className="py-3 px-3 w-2/5">
+                        <p className={`font-bold truncate ${selected ? 'text-green' : 'text-ink'}`}>
+                          {convo.title || 'Untitled'}
+                        </p>
+                        <p className="text-xs text-slate font-bold">{formatDate(convo.createdAt)}</p>
                       </div>
+                      <div className="py-3 px-3 text-right font-bold text-ink flex-1">{formatNumber(convo.totalTokens)}</div>
+                      <div className="py-3 px-3 text-right font-bold text-ink flex-1">{formatNumber(convo.energyKwh, 6)}</div>
+                      <div className="py-3 px-3 text-right font-bold text-ink flex-1">{formatNumber(convo.waterLiters, 4)}</div>
+                      <div className="py-3 px-3 text-right font-bold text-ink flex-1">{formatNumber(convo.carbonGrams, 4)}</div>
+                      <div className="py-3 px-3 text-right font-bold text-ink flex-1">{convo.messageCount}</div>
                     </div>
-                  )}
-                </td>
-              </tr>
-            ))}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -168,10 +155,18 @@ export default function ConvoTable({ conversations }) {
         </div>
       )}
 
-      {/* Top 5 legend */}
-      <div className="flex items-center gap-2 text-xs text-slate font-bold">
-        <div className="w-4 h-3 border-l-4 border-coral" />
-        <span>Top 5 most resource-intensive conversations</span>
+      {/* Legend */}
+      <div className="flex items-center gap-4 text-xs text-slate font-bold">
+        <div className="flex items-center gap-1.5">
+          <div className="w-4 h-3 border-l-4 border-coral" />
+          <span>Top 5 impact</span>
+        </div>
+        {selectedConvo && (
+          <div className="flex items-center gap-1.5">
+            <div className="w-4 h-3 border-l-4 border-green" />
+            <span>Selected</span>
+          </div>
+        )}
       </div>
     </div>
   );

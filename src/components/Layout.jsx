@@ -160,7 +160,7 @@ export default function Layout({ children, hasData }) {
 
         {/* Main content — top padding for mobile topbar handled in CSS */}
         <main className="flex-1">
-          <div className="w-full max-w-5xl mx-auto px-4 md:px-8 lg:px-12 py-8 md:py-12">
+          <div className="w-full max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-8 md:py-12">
             {children}
           </div>
         </main>
