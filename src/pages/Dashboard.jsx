@@ -192,7 +192,7 @@ function PerConvoStrip({ energyPerConvo, waterPerConvo, carbonPerConvo }) {
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
       {[
         { val: energyPerConvo, dec: 5, unit: 'kWh per conversation', color: '#2ECC71' },
-        { val: waterPerConvo,  dec: 3, unit: 'liters per conversation', color: '#16C0FF' },
+        { val: waterPerConvo, dec: 3, unit: 'liters per conversation', color: '#16C0FF' },
         { val: carbonPerConvo, dec: 3, unit: 'g CO₂ per conversation', color: '#FB4B5F' },
       ].map((item, i) => (
         <div
@@ -246,7 +246,7 @@ function Projection({ energyPerConvo, waterPerConvo, carbonPerConvo }) {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
           { val: energyPerConvo * annual, dec: 3, unit: 'kWh', label: 'energy', color: '#2ECC71' },
-          { val: waterPerConvo * annual,  dec: 2, unit: 'liters', label: 'water', color: '#16C0FF' },
+          { val: waterPerConvo * annual, dec: 2, unit: 'liters', label: 'water', color: '#16C0FF' },
           { val: carbonPerConvo * annual, dec: 2, unit: 'g CO₂', label: 'carbon', color: '#FB4B5F' },
         ].map((item, i) => (
           <div key={i} className="p-4 bg-cream border-4 border-navy/10 text-center">
@@ -315,14 +315,14 @@ export default function Dashboard() {
     );
   }
 
-  const comparisons   = getComparisons(totals);
-  const inputTokens   = totals.inputTokens  ?? 0;
-  const outputTokens  = totals.outputTokens ?? 0;
+  const comparisons = getComparisons(totals);
+  const inputTokens = totals.inputTokens ?? 0;
+  const outputTokens = totals.outputTokens ?? 0;
   const totalMessages = totals.totalMessages ?? 0;
-  const avgTokens     = Math.round(totals.totalTokens / totals.totalConversations);
-  const energyPerConvo = totals.energyKwh   / totals.totalConversations;
-  const waterPerConvo  = totals.waterLiters  / totals.totalConversations;
-  const carbonPerConvo = totals.carbonGrams  / totals.totalConversations;
+  const avgTokens = Math.round(totals.totalTokens / totals.totalConversations);
+  const energyPerConvo = totals.energyKwh / totals.totalConversations;
+  const waterPerConvo = totals.waterLiters / totals.totalConversations;
+  const carbonPerConvo = totals.carbonGrams / totals.totalConversations;
 
   const dateLabel =
     dateRange?.earliest && dateRange?.latest

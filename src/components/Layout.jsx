@@ -39,9 +39,12 @@ export default function Layout({ children, hasData }) {
         <div className="sidebar-logo-area">
           <div className="flex items-center justify-between w-full">
             <NavLink to="/" aria-label="OpenH2O Home" className="logo-link flex items-center gap-2.5">
-              <div className="logo-box">
-                <span className="logo-letter">O</span>
-              </div>
+              <img
+                src="/logo.png"
+                alt="OpenH2O logo"
+                className="logo-img transition-transform hover:scale-105"
+                style={{ width: collapsed && !sidebarOpen ? '2rem' : '2.6rem', height: collapsed && !sidebarOpen ? '2rem' : '2.6rem', objectFit: 'cover', borderRadius: '6px' }}
+              />
               {(!collapsed || sidebarOpen) && (
                 <div className="logo-text-group">
                   <span className="logo-name">OpenH2O</span>
@@ -128,9 +131,11 @@ export default function Layout({ children, hasData }) {
         {/* Mobile topbar — hidden on desktop via CSS media query */}
         <div className="mobile-topbar no-print">
           <NavLink to="/" className="logo-link flex items-center gap-2" aria-label="OpenH2O Home">
-            <div className="logo-box logo-box--sm">
-              <span className="logo-letter logo-letter--sm">O</span>
-            </div>
+            <img
+              src="/logo.png"
+              alt="OpenH2O logo"
+              style={{ width: '1.8rem', height: '1.8rem', objectFit: 'cover', borderRadius: '4px' }}
+            />
             <span className="logo-name" style={{ fontSize: '0.9rem' }}>OpenH2O</span>
           </NavLink>
           <div className="flex items-center gap-2">
